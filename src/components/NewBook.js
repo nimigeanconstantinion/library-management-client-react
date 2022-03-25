@@ -73,8 +73,8 @@ export default () => {
 
 
     
-        const regex = /\d*/;
-        
+        const regex = /\d*/g;
+        console.log("test " + regex.test(year));
         if (regex.test(year)==false) {
             setErrors(prev => (
                 [
@@ -84,7 +84,7 @@ export default () => {
             ))
         } 
         
-        if (year < 1500 && year > 2022) {
+        if (year < 1500 || year > 2022) {
             
             setErrors(prev => (
                 

@@ -6,6 +6,10 @@ import { useHistory } from "react-router-dom";
 
 const Update = () => {
     
+  
+    let { bookId } = useParams();
+
+    let [book, setBook] = useState({});  
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [genre, setGenre] = useState("");
@@ -13,35 +17,54 @@ const Update = () => {
     const [errors, setErrors] = useState([]);
 
     let history = useHistory();
-    let { bookId } = useParams();
-
-    let [book, setBook] = useState({});  
-
     
 
     useEffect(() => {
         
         getBookById(bookId);
-    }, [title,author,genre,year])
+        
+    }, [])
     
 
 
     let valid = () => {
         setErrors([]);
-        if (book.title === "") {
-            setErrors(prev => (
-               [...prev,"Title is required"] 
-            ));
-        }    
-
+        if (title === "") {
+            
+            setErrors(prev =>(
+                 
+                [
+                    ...prev,
+                    "Title is required"
+                ])
+            )
+        }
 
         const regex = /\d*/g;
-        
-        if (regex.test(book.year) == false) {
+        console.log("test " + regex.test(year));
+        if (regex.test(year)==false) {
             setErrors(prev => (
-                [...prev,"You cant enter only number"]
+                [
+                    ...prev,
+                    "Year must be number"
+                ]
             ))
-        }
+        } 
+        
+
+        
+    }
+
+   let  updateBook = async () => {
+        let b = {};
+        let api = new Api();
+        b.id = bookId;
+        b.title = title;
+        b.author = author;
+        b.genre = genre;
+        b.year = year;
+       console.log(b);
+       // await api.updBook(b);
 
     }
 
@@ -49,22 +72,25 @@ const Update = () => {
         let api = new Api();
         try {
             let data = await api.getBookById(bookId);
-            setBook(data);        
+ 
         } catch (e) {
             throw new Error(e);
         }
     }
 
-    let handleUpdClick = () => {
+    let handleUpdClick = async () => {
         let rtx = "";
+
         if (errors.length == 0) {
-            
+            await updateBook();
+            history.push("/");
         } else {
             errors.forEach(e => {
                 rtx += e + "\n";
             });
+            alert(rtx);
         }
-        alert(rtx);
+        
     }
 
     let handleCancelClick = () => {
@@ -87,9 +113,7 @@ const Update = () => {
         if (obj.id === "year") {
             setYear(obj.value);
         }
-
-        valid();
-
+        
     }
 
 
@@ -98,25 +122,25 @@ const Update = () => {
 
         <h1>Update Book</h1>
         <div id="err"></div>
-        <div class="divupdb">
-            <label for="title">Title</label>
-                <input type="text" name="title" value={book.title}/>
+        <div className="divupdb">
+            <label>Title</label>
+                <input type="text" name="title" id="title" defaultValue={book.title}/>
 
         </div>
-        <div class="divupdb">
-            <label for="auth">Author</label>
-                <input type="text" name="auth" id="auth" value={book.author}/>
+        <div className="divupdb">
+            <label>Author</label>
+                <input type="text" name="auth" id="auth" defaultValue={book.author}/>
 
         </div>
-        <div class="divupdb">
-            <label for="gen">Genre</label>
-            <input type="text" name="gen" id="gen" value={book.genre}/>
+        <div className="divupdb">
+            <label>Genre</label>
+            <input type="text" name="gen" id="gen" defaultValue={book.genre}/>
 
         </div>
 
-        <div class="divupdb">
-            <label for="year">Year</label>
-            <input type="text" name="year" id="year" value={book.year}/>
+        <div className="divupdb">
+            <label>Year</label>
+            <input type="text" name="year" id="year" defaultValue={book.year}/>
 
         </div>
         <button id="btn_updb_submit" onClick={handleUpdClick}>Update Book</button>
